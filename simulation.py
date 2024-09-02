@@ -1,3 +1,4 @@
+import inspect
 import json
 import numpy as np
 import torch
@@ -20,6 +21,28 @@ import utils
 import models
 import data
 import argparse
+
+
+# Keep a reference to the original print function
+original_print = print
+
+# Custom print function
+def custom_print(*args, **kwargs):
+    # Get the caller's frame
+    frame = inspect.currentframe().f_back
+    # Get the caller's filename and line number
+    filename =  os.path.basename(frame.f_globals["__file__"])
+    lineno = frame.f_lineno
+    # Get the current time
+    current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # Format the message
+    message = " ".join(map(str, args))
+    formatted_message = f"{current_time} - {filename}:{lineno} - {message}"
+    # Call the original print function with the formatted message
+    original_print(formatted_message, **kwargs)
+
+# Override the built-in print function
+__builtins__.print = custom_print
 
 class SparsifyClient(fl.client.Client):
     def __init__(self, 
